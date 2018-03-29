@@ -1,7 +1,7 @@
 #coding=utf8
 __author__ = 'zyx'
 
-import MySQLdb
+import pymysql
 import xlrd
 from xlutils.copy import copy
 import time
@@ -11,7 +11,7 @@ class HtmlOutputer(object):
 
     #写入EXCEL
     def output_excel(self,new_data,house_city):
-        file=xlrd.open_workbook("soufang.xls",formatting_info=True)
+        file=xlrd.open_workbook("soufang.xls")
 
         #获取已有sheet的行数
         nrow=file.sheets()[0].nrows
@@ -30,7 +30,7 @@ class HtmlOutputer(object):
 
     #写入数据库
     def output_mysql(self,new_data,house_city):
-        db=MySQLdb.connect(host="localhost",user="root",passwd="root",db="test",charset="utf8")
+        db=pymysql.connect(host="localhost",user="root",passwd="root",db="test",charset="utf8")
         cursor=db.cursor()
         try:
             for item in new_data:

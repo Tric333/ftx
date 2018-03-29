@@ -27,19 +27,24 @@ class SpiderMain(object):
                 html_cont=self.downloader.download(new_url)#下载页面内容
                 new_urls, new_data ,house_city= self.parser.parse(new_url, html_cont)#解析页面内容
                 self.urls.add_new_urls(new_urls)
-                #self.outputer.output_excel(new_data,house_city)#写入excel
-                self.outputer.output_mysql(new_data,house_city)#写入mysql
+                self.outputer.output_excel(new_data,house_city)#写入excel
+                #self.outputer.output_mysql(new_data,house_city)#写入mysql
                 print("第",count,"个网页【",new_url,"】输出成功--------------")
-            except:
+            except Exception as e:
+                print(e)
+                import traceback
+                print(traceback.print_exc())
                 self.urls.add_false_url(new_url)#如果解析失败，则将url放入失败列表
                 print ("第",count,"个网页【",new_url,"】爬取失败，将会被重新爬取,失败次数过多将会被舍弃-------------")
+                import time
+                time.sleep(2)
                 count=count-1
 
         self.urls.release_urllist()#解析并输出完一个城市后，释放page页urllist
 
 if __name__=="__main__":
     obj_spider=SpiderMain()
-    root_url="http://newhouse.wuhan.fang.com/house/s/b81-b91/"
+    root_url="http://esf.xian.fang.com/"
     city_urls=obj_spider.CityUrl_Crwa(root_url)
     for city_url in city_urls:
         obj_spider.crwa(city_url)
