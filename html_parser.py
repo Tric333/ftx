@@ -5,13 +5,32 @@ from bs4 import BeautifulSoup
 import re
 
 class HtmlParser(object):
-    def cityurlparser(self,html_cont):
+    def district (self,html_cont):
         soup=BeautifulSoup(html_cont,'html.parser',from_encoding='gb2312')
-        city_urls=set()
+        district_urls={}
+        #rigions = []
         linklist=soup.find('div',class_="wid1000").find('div',class_='qxName').find_all('a',href=re.compile(r"/house-a\w\w\w\w/"))
-        [city_urls.add(urlparse.urljoin('http://esf.xian.fang.com',city_url["href"])) for city_url in linklist]
-        return city_urls
+        #城区 + 子区域 + 网址 =  实际结果，后期按照地域排列
+        for link in linklist:
+            district_urls[str(link.get_text())] = (urlparse.urljoin('http://esf.xian.fang.com',link["href"]))
 
+        #[city_urls[str([link.get_text() for link in linklist])]] =
+        #[rigions.append(link.get_text()) for link in linklist]
+        #[city_urls.append(urlparse.urljoin('http://esf.xian.fang.com',city_url["href"])) for city_url in linklist]
+        return district_urls
+
+    def business_district_parser(self,html_cont):
+        soup=BeautifulSoup(html_cont,'html.parser',from_encoding='gb2312')
+        bd_urls={}
+        #rigions = []
+        linklist=soup.find('div',class_="wid1000").find('div',class_='shangQuan').find('p',class_='contain').find_all('a',href=re.compile(r"/house-a\w\w\w\w-"))
+        #城区 + 子区域 + 网址 =  实际结果，后期按照地域排列
+        for link in linklist:
+            bd_urls[str(link.get_text())] = (urlparse.urljoin('http://esf.xian.fang.com',link["href"]))
+        #[city_urls[str([link.get_text() for link in linklist])]] =
+        #[rigions.append(link.get_text()) for link in linklist]
+        #[city_urls.append(urlparse.urljoin('http://esf.xian.fang.com',city_url["href"])) for city_url in linklist]
+        return bd_urls
 
     def parse(self,page_url,html_cont):
         if page_url is None or html_cont is None:
@@ -26,7 +45,7 @@ class HtmlParser(object):
 #获取分页链接
     def _get_new_urls(self,page_url,soup):
         new_urls=set()
-        links=soup.find('div',class_="wid1000").find('div',class_='shangQuan').find('p',class_='contain').find_all('a',href=re.compile(r"/house-a\w+"))
+        links=soup.find('div',class_="wid1000").find('div',class_='fanye gray6').find_all('a',href=re.compile(r"/house-a\w+"))
 
         for link in links:
             new_url=link['href']
