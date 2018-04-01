@@ -2,6 +2,10 @@
 __author__ = 'zyx'
 
 import url_manager,html_downloader,html_parser,html_outputer
+from print_manage import *
+
+import time
+import traceback
 
 class SpiderMain(object):
     def __init__(self):
@@ -17,8 +21,9 @@ class SpiderMain(object):
         return district_urls
 
     def Business_District_Crwa(self,root_url):
+        print_info('开始下载 {}'.format(root_url))
         html_cont=self.downloader.download(root_url)
-        print('开始解析 {} '.format(root_url))
+        print_info('开始解析 {} '.format(root_url))
         business_district_urls = self.parser.business_district_parser(html_cont)
         return business_district_urls
 
@@ -30,19 +35,18 @@ class SpiderMain(object):
             count=count+1
             try:
                 new_url=self.urls.get_new_url()#获取新的链接
+                print_info ('{}{}第{}个网页【{}】开始处理--------------'.format(district,business,count,new_url))
                 html_cont=self.downloader.download(new_url)#下载页面内容
                 new_urls, new_data ,house_city= self.parser.parse(new_url, html_cont)#解析页面内容
                 self.urls.add_new_urls(new_urls)
-                self.outputer.output_excel(district,business,new_data,house_city)#写入excel
+                self.outputer.output_excel(new_data,house_city,district,business)#写入excel
                 #self.outputer.output_mysql(new_data,house_city)#写入mysql
-                print("第",count,"个网页【",new_url,"】输出成功--------------")
+                print_info ('{}{}第{}个网页【{}】输出成功--------------'.format(district,business,count,new_url))
             except Exception as e:
-                print(e)
-                import traceback
-                print(traceback.print_exc())
+                print_dbg(e)
+                print_dbg(traceback.print_exc())
                 self.urls.add_false_url(new_url)#如果解析失败，则将url放入失败列表
-                print ("第",count,"个网页【",new_url,"】爬取失败，将会被重新爬取,失败次数过多将会被舍弃-------------")
-                import time
+                print_info ('{}{}第{}个网页【{}】爬取失败，舍弃'.format(district,business,count,new_url))
                 time.sleep(2)
                 count=count-1
 

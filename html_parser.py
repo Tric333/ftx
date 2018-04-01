@@ -2,7 +2,9 @@
 __author__ = 'zyx'
 import urllib.parse as urlparse
 from bs4 import BeautifulSoup
+from print_manage import *
 import re
+import traceback
 
 class HtmlParser(object):
     def district (self,html_cont):
@@ -66,17 +68,33 @@ class HtmlParser(object):
             except:
                 house_data['house_name']=""
 
-            try:#房子网址
-                house_tag=node.find('p',class_="mt10").find('a').get("href")
-                house_data['house_tag']=''.join(urlparse.urljoin('http://esf.xian.fang.com',house_tag))
+            try:#房子结构
+                house_tag=node.find('p',class_="mt12").get_text()
+                tmp = []
+                for i in house_tag.split('|'):
+                    tmp.append(i.strip())
+                tmp = '|'.join(tmp)
+
+                if tmp is not '':
+                    house_data['house_struct']=''.join(tmp)
+                else:
+                    house_data['house_struct'] = 'NULL'
+            except Exception as e:
+                print_dbg(e)
+                print_dbg(traceback.print_exc())
+                house_data['house_struct'] = 'ERROR'
+
+            try:#房子描述
+                house_tag=node.find('p',class_="title").find('a').get("title")
+                house_data['house_description']=''.join(house_tag)
             except:
-                house_data['house_tag']=''
+                house_data['house_description']=''
 
             try:#小区地址
                 house_address=node.find('p',class_="mt10").find(class_='iconAdress ml10 gray9').get('title')
                 house_data['house_address']=''.join(house_address.split())
             except:
-                house_data['house_address']=""
+                house_data['house_address']=''
 
             try:#单价
                 house_unit_price=node.find('div',class_="moreInfo").find('p',class_='danjia alignR mt5').get_text()
@@ -95,6 +113,12 @@ class HtmlParser(object):
                 house_data['house_total_price']=''.join(house_total_price.split())
             except:
                 house_data['house_total_price']=""
+
+            try:#房子网址
+                house_tag=node.find('p',class_="title").find('a').get("href")
+                house_data['house_web']=''.join(urlparse.urljoin('http://esf.xian.fang.com',house_tag))
+            except:
+                house_data['house_web']=''
 
             res_data.append(house_data)
         return res_data

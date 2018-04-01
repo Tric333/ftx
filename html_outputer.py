@@ -3,14 +3,19 @@ __author__ = 'zyx'
 
 import pymysql
 import xlrd
+import xlwt
 from xlutils.copy import copy
 import time
-
+import os
 
 class HtmlOutputer(object):
 
     #写入EXCEL
-    def output_excel(self,new_data,house_city):
+    def output_excel(self,new_data,house_city,district,business):
+        if os.path.exists('soufang.xls') == False:
+            w = xlwt.Workbook(encoding='utf-8')
+            ws = w.add_sheet('abstract_info')
+            w.save('soufang.xls')
         file=xlrd.open_workbook("soufang.xls")
 
         #获取已有sheet的行数
@@ -22,9 +27,11 @@ class HtmlOutputer(object):
         sheet=copy_file.get_sheet(0)
         #插入数据
         for row,item in enumerate(new_data):
-            sheet.write((row+nrow),4,house_city)
+            sheet.write((row+nrow),0,house_city)
+            sheet.write((row+nrow),1,district)
+            sheet.write((row+nrow),2,business)
             for i,value in enumerate(item.values()):
-                sheet.write((row+nrow),i,value)
+                sheet.write((row+nrow),i+3,value)
         copy_file.save('soufang.xls')
 
 

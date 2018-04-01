@@ -1,5 +1,6 @@
 #coding=utf8
 __author__ = 'zyx'
+from print_manage import *
 
 class UrlManager(object):
     def __init__(self):
@@ -12,7 +13,7 @@ class UrlManager(object):
             return
         if url not in self.new_urls and url not in self.old_urls:
             self.new_urls.add(url)
-
+            print_dbg('add_new_url: {}'.format(url))
 
     def add_new_urls(self, urls):
         if urls is None or len(urls)==0:
