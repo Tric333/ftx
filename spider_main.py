@@ -39,7 +39,8 @@ class SpiderMain(object):
                 html_cont=self.downloader.download(new_url)#下载页面内容
                 new_urls, new_data ,house_city= self.parser.parse(new_url, html_cont)#解析页面内容
                 self.urls.add_new_urls(new_urls)
-                self.outputer.output_excel(new_data,house_city,district,business)#写入excel
+                self.outputer.output_txt(new_data,house_city,district,business)#写入excel
+                #self.outputer.output_excel(new_data,house_city,district,business)#写入excel
                 #self.outputer.output_mysql(new_data,house_city)#写入mysql
                 print_info ('{}{}第{}个网页【{}】输出成功--------------'.format(district,business,count,new_url))
             except Exception as e:

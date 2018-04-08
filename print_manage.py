@@ -10,4 +10,4 @@ def print_info(msg):
 
 def print_dbg(msg):
     if dbg_switch == 0:
-        print('[dbg]:'+ msg)
+        print('[dbg]:'+ str(msg))

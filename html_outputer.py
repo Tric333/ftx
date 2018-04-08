@@ -7,8 +7,27 @@ import xlwt
 from xlutils.copy import copy
 import time
 import os
+import csv
+from print_manage import *
 
 class HtmlOutputer(object):
+
+    #写入EXCEL
+    def output_txt(self,new_data,house_city,district,business):
+        fd = open('data/'+ district + '_'+ business + '_'+ 'soufang.txt','a+')
+
+        try:
+            for row, item in enumerate(new_data):
+                data = [house_city, district, business]
+                for i, value in enumerate(item.values()):
+                    data.append(value.replace(',',' '))#将内容的逗号换为空格，防止影响csv格式
+                fd.write(','.join(data) + '\n')
+                print_dbg(data)
+
+        except Exception as e:
+            print_info(e)
+
+        fd.close()
 
     #写入EXCEL
     def output_excel(self,new_data,house_city,district,business):
@@ -34,7 +53,6 @@ class HtmlOutputer(object):
                 sheet.write((row+nrow),i+3,value)
         copy_file.save('soufang.xls')
 
-
     #写入数据库
     def output_mysql(self,new_data,house_city):
         db=pymysql.connect(host="localhost",user="root",passwd="root",db="test",charset="utf8")
@@ -53,3 +71,7 @@ class HtmlOutputer(object):
             print(item["house_name"],"false")
             db.rollback()#发生错误时回滚
         db.close()
+
+if __name__ == '__main__':
+    a = HtmlOutputer();
+    a.output_txt(['1','2','3'],'西安','雁塔','高新')
